@@ -2,14 +2,16 @@ import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import React from 'react';
 import {FlatList, SafeAreaView} from 'react-native';
+import Colors from '../../../styles/Color';
 import {parseRoomList} from '../../../utils/parsers/parseFBDBResponse';
 import EmptyView from '../../components/EmptyView';
 import FloatingButton from '../../components/FloatingButton';
 import LoadingView from '../../components/LoadingView';
 import RoomCard from '../../components/card/RoomCard/RoomCard';
+import {HeaderBack} from '../../components/header/HeaderBack/HeaderBack';
 import RoomInputModal from '../../components/modal/ModalNewRoom';
-import {ROOM_PAGE} from '../../router/routes';
-import styles from './Rooms.style';
+import {ROOMS_PAGE} from '../../router/routes';
+import styles from './RoomPage.style';
 
 export interface UserSchema {
   username: string;
@@ -31,7 +33,7 @@ export interface RoomSchema {
   messages: MessageSchema[];
 }
 
-const Rooms = ({route, navigation}) => {
+const RoomPage = ({route, navigation}) => {
   const [inputModalVisible, setInputModalVisible] =
     React.useState<boolean>(false);
   const [roomList, setRoomList] = React.useState<RoomSchema[]>([]);
@@ -41,6 +43,16 @@ const Rooms = ({route, navigation}) => {
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
 
   React.useEffect(() => {
+    const onPressBack = () => navigation.goBack();
+    navigation.setOptions({
+      title: route.params?.roomName,
+      headerBackTitleVisible: true,
+      headerBackTitle: ROOMS_PAGE,
+      headerBackTitleStyle: {
+        color: Colors.text_bright,
+      },
+      headerLeft: () => HeaderBack({backTitle: ROOMS_PAGE, onPressBack}),
+    });
     setLoading(true);
     const listenDB = () => {
       const reference = database().ref('/rooms');
@@ -74,13 +86,7 @@ const Rooms = ({route, navigation}) => {
       .catch(error => console.log('Unable to get rooms info. Error: ' + error));
   };
 
-  const handleEnterRoom = (item: RoomSchema) => {
-    console.log('Tapped room: ' + item.name);
-    navigation.navigate(ROOM_PAGE, {
-      roomId: item.id,
-      roomName: item.name,
-    });
-  };
+  const handleEnterRoom = (item: RoomSchema) => console.log(item);
 
   const renderRoomItem = ({item}: {item: RoomSchema}) => (
     <RoomCard room={item} onEnterRoom={() => handleEnterRoom(item)} />
@@ -127,7 +133,6 @@ const Rooms = ({route, navigation}) => {
             <FlatList
               data={roomList}
               renderItem={renderRoomItem}
-              numColumns={2}
               keyExtractor={item => item.id.toString()}
               onScroll={() => showFloatingButton(true)}
               onEndReached={() => showFloatingButton(false)}
@@ -153,4 +158,4 @@ const Rooms = ({route, navigation}) => {
   );
 };
 
-export default Rooms;
+export default RoomPage;

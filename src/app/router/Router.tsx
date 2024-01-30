@@ -2,16 +2,20 @@ import auth from '@react-native-firebase/auth';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
 import FlashMessage from 'react-native-flash-message';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Login from '../../app/pages/auth/Login';
 import Sign from '../../app/pages/auth/Sign';
-import Colors from '../../styles/Color';
-import {toPascalCase} from '../../utils/textUtils';
+import {HeaderLogout} from '../components/header/HeaderLogout/HeaderLogout';
+import RoomPage from '../pages/RoomPage';
 import Rooms from '../pages/Rooms';
 import {stackNavOpts} from './options';
-import {AUTH_STACK, LOGIN_PAGE, ROOMS_PAGE, SIGN_PAGE} from './routes';
+import {
+  AUTH_STACK,
+  LOGIN_PAGE,
+  ROOMS_PAGE,
+  ROOM_PAGE,
+  SIGN_PAGE,
+} from './routes';
 
 const Stack = createStackNavigator();
 
@@ -41,33 +45,6 @@ const Router = () => {
     });
   }, []);
 
-  const renderHeaderIcon = ({iconName}: {iconName: string}) => {
-    let displayName = auth().currentUser?.email?.split('@')[0];
-    return (
-      <View style={styles.userInfoContainer}>
-        <Text style={styles.userInfoText}>{toPascalCase(displayName)}</Text>
-        <Icon
-          name={iconName}
-          size={32}
-          color={Colors.secondary}
-          onPress={() => auth().signOut()}
-        />
-      </View>
-    );
-  };
-
-  const styles = StyleSheet.create({
-    userInfoContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    userInfoText: {
-      color: Colors.secondary,
-      marginRight: 2,
-      fontSize: 12,
-    },
-  });
-
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={stackNavOpts}>
@@ -78,10 +55,16 @@ const Router = () => {
             screenOptions={{
               ...stackNavOpts,
               headerShown: true,
-              headerLeft: () => null,
-              headerRight: () => renderHeaderIcon({iconName: 'exit-to-app'}),
+              headerRight: () => HeaderLogout({iconName: 'exit-to-app'}),
             }}>
-            <Stack.Screen name={ROOMS_PAGE} component={Rooms} />
+            <Stack.Screen
+              options={{
+                headerLeft: () => null,
+              }}
+              name={ROOMS_PAGE}
+              component={Rooms}
+            />
+            <Stack.Screen name={ROOM_PAGE} component={RoomPage} />
           </Stack.Group>
         )}
       </Stack.Navigator>

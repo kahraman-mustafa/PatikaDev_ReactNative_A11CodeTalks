@@ -2,9 +2,9 @@ import React from 'react';
 import {TextInput, View} from 'react-native';
 import Modal from 'react-native-modal';
 import Button from '../../Button';
-import styles from './ContentInputModal.style';
+import styles from './ModalNewMessage.style';
 
-const ContentInputModal = ({isVisible, onClose, onSend}) => {
+const ModalNewMessage = ({isVisible, onClose, onSend}) => {
   const [text, setText] = React.useState('');
 
   const handleSend = () => {
@@ -27,9 +27,8 @@ const ContentInputModal = ({isVisible, onClose, onSend}) => {
       <View style={styles.container}>
         <View style={styles.input_container}>
           <TextInput
-            placeholder="Darla hadi milleti..."
+            placeholder="Odaya bir isim ver..."
             onChangeText={setText}
-            multiline
           />
         </View>
         <Button title="Gönder" onPress={handleSend} />
@@ -38,4 +37,4 @@ const ContentInputModal = ({isVisible, onClose, onSend}) => {
   );
 };
 
-export default ContentInputModal;
+export default ModalNewMessage;

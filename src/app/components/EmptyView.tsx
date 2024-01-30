@@ -2,17 +2,17 @@ import LottieView from 'lottie-react-native';
 import React from 'react';
 import {Text, View} from 'react-native';
 
-const LoadingView = ({message}: {message: string}) => {
+const EmptyView = ({message}: {message: string}) => {
   return (
     <View style={{flex: 1}}>
       <Text style={{textAlign: 'center', marginTop: 40}}>{message}</Text>
       <LottieView
         style={{flex: 1}}
-        source={require('../../assets/loading_paper_plane.json')}
+        source={require('../../assets/emptychat.json')}
         autoPlay
       />
     </View>
   );
 };
 
-export default LoadingView;
+export default EmptyView;
