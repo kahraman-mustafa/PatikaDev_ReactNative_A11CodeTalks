@@ -1,8 +1,23 @@
+# PatikaDev - React Native Kursu - Firebase Ders Sonu Kendin Yap Projesi
+
+PatikaDev ReactNative kursu 8. dersi Firebase kapsamında yapılan ders sonu kendin yap çalışmasıdır.
+
+![CodeTalks React Native Uygulaması](https://raw.githubusercontent.com/kahraman-mustafa/PatikaDev_ReactNative_A11CodeTalks/master/A11CodeTalks.mp4)
+
+- Firebase auth modülü ile kayıt, giriş ve kullanıcı bilgileri
+- Firebase database (Realtime Database) ile veri yönetme ve senkronizasyon
+- **Colors.ts** dosyası ile özel tema
+- **Vector icons**
+- Notification on screen: **react-native-flash-message** component
+- Using Flatlist onScroll, onEndReached etc. events to manage floating button visibility
+- Managing header title, left and right components dynamically
+- Passing params between screens via navigation params
+
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+> **Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
 
 ## Step 1: Start the Metro Server
 
