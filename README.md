@@ -3,7 +3,6 @@
 PatikaDev ReactNative kursu 8. dersi Firebase kapsamında yapılan ders sonu kendin yap çalışmasıdır.
 
 ![CodeTalks React Native Uygulaması-Gif](https://raw.githubusercontent.com/kahraman-mustafa/PatikaDev_ReactNative_A11CodeTalks/master/A11CodeTalks.gif)
-![CodeTalks React Native Uygulaması-Video](https://raw.githubusercontent.com/kahraman-mustafa/PatikaDev_ReactNative_A11CodeTalks/master/A11CodeTalks.mp4)
 
 - Firebase auth modülü ile kayıt, giriş ve kullanıcı bilgileri
 - Firebase database (Realtime Database) ile veri yönetme ve senkronizasyon
