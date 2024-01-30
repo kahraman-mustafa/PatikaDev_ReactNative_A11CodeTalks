@@ -1,70 +1,90 @@
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import Colors from '../../../../styles/Color';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.primary,
-    marginBottom: 16,
+    backgroundColor: Colors.container,
+    margin: 8,
     padding: 8,
+    paddingBottom: 0,
     borderRadius: 10,
+    borderColor: Colors.primary,
+    borderWidth: 1,
+    minHeight: Dimensions.get('window').height * 0.2,
   },
-  inner_container: {
-    flexDirection: 'row',
-  },
-  user: {
+  top_container: {
+    flexDirection: 'column',
     flex: 1,
-    fontWeight: 'bold',
-    color: Colors.text_bright,
+    justifyContent: 'flex-start',
+  },
+  message: {
+    flex: 1,
+    color: Colors.drawer_text,
+    textAlign: 'left',
+    textAlignVertical: 'center',
+    fontSize: 16,
+    marginHorizontal: 8,
   },
   date: {
     fontStyle: 'italic',
-    color: Colors.surface,
+    color: Colors.drawer_text,
+    alignSelf: 'center',
+    textAlignVertical: 'bottom',
+    fontSize: 10,
+    marginBottom: 4,
   },
-  text: {
-    marginTop: 10,
-    color: Colors.text_bright,
-    fontSize: 16,
+  footer_container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  dislike_container: {
-    alignItems: 'flex-end',
-  },
-  dislike_button_container: {
+  quickstat_container: {
     backgroundColor: Colors.container,
     borderWidth: 1.5,
     borderColor: Colors.primary,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    margin: 2,
-    borderRadius: 20,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    margin: 5,
+    borderRadius: 25,
   },
-  dislike_count_container: {
+  likestat_container: {
+    //
+  },
+  dislikestat_container: {
+    //
+  },
+  counter_container: {
     marginRight: 4,
     paddingHorizontal: 6,
     borderRadius: 50,
-    backgroundColor: Colors.primary,
-  },
-  dislike_count: {
-    fontSize: 14,
-    color: Colors.text_bright,
-  },
-  dislike_button_icon: {
-    color: Colors.tertiary_container,
-    marginHorizontal: 8,
-  },
-  dislike_button_container_disabled: {
     backgroundColor: Colors.tertiary,
-    borderColor: Colors.tertiary,
   },
-  dislike_button_title: {
-    fontWeight: 'bold',
-    fontSize: 14,
-    color: Colors.primary,
+  likecounter_container: {
+    backgroundColor: 'blue',
   },
-  dislike_button_title_disabled: {
-    color: Colors.surface,
+  dislikecounter_container: {
+    backgroundColor: 'red',
+  },
+  counter: {
+    fontSize: 12,
+    color: Colors.container,
+  },
+  likecounter: {
+    //
+  },
+  dislikecounter: {
+    //
+  },
+  icon: {
+    color: Colors.tertiary,
+  },
+  likeicon: {
+    color: 'blue',
+  },
+  dislikeicon: {
+    color: 'red',
   },
 });

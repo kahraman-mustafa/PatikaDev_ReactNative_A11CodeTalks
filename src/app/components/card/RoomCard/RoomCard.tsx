@@ -15,14 +15,16 @@ const RoomCard = ({room, onEnterRoom}: RoomCardProps) => {
     <TouchableOpacity style={styles.container} onPress={onEnterRoom}>
       <View style={styles.top_container}>
         <Text style={styles.roomName}>{room.name}</Text>
-        <Text style={styles.date}>{formattedDate(room.createdAt)}</Text>
+        <Text style={styles.date}>
+          {formattedDate(room.createdAt)} by "{room.founder}"
+        </Text>
       </View>
       <View style={styles.footer_container}>
         <View style={[styles.quickstat_container, styles.userstat_container]}>
           <View
             style={[styles.counter_container, styles.usercounter_container]}>
             <Text style={[styles.counter, styles.usercounter]}>
-              {Object.keys(room.users).length}
+              {room.users.length}
             </Text>
           </View>
           <Icon

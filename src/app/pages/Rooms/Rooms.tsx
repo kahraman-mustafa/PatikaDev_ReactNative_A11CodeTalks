@@ -7,26 +7,21 @@ import EmptyView from '../../components/EmptyView';
 import FloatingButton from '../../components/FloatingButton';
 import LoadingView from '../../components/LoadingView';
 import RoomCard from '../../components/card/RoomCard/RoomCard';
-import RoomInputModal from '../../components/modal/ModalNewRoom';
+import ModalNewRoom from '../../components/modal/ModalNewRoom';
 import {ROOM_PAGE} from '../../router/routes';
+import {MessageSchema} from '../RoomPage/RoomPage';
 import styles from './Rooms.style';
 
 export interface UserSchema {
   username: string;
 }
 
-export interface MessageSchema {
-  id: string;
-  date: string;
-  text: string;
-  username: string;
-  dislike: number;
-}
 export interface RoomSchema {
   id: string;
   createdAt: string;
   lastActiveAt: string;
   name: string;
+  founder: string;
   users: UserSchema[];
   messages: MessageSchema[];
 }
@@ -57,7 +52,6 @@ const Rooms = ({route, navigation}) => {
     };
 
     listenDB();
-    console.log(new Date().toISOString());
   }, []);
 
   const checkDB = () => {
@@ -75,16 +69,15 @@ const Rooms = ({route, navigation}) => {
   };
 
   const handleEnterRoom = (item: RoomSchema) => {
-    console.log('Tapped room: ' + item.name);
+    console.log('Tapped room: ' + JSON.stringify(item));
     navigation.navigate(ROOM_PAGE, {
-      roomId: item.id,
-      roomName: item.name,
+      room: item,
     });
   };
 
-  const renderRoomItem = ({item}: {item: RoomSchema}) => (
-    <RoomCard room={item} onEnterRoom={() => handleEnterRoom(item)} />
-  );
+  const renderRoomItem = ({item}: {item: RoomSchema}) => {
+    return <RoomCard room={item} onEnterRoom={() => handleEnterRoom(item)} />;
+  };
 
   const handleCreateRoom = (roomName: string) => {
     setInputModalVisible(false);
@@ -142,7 +135,7 @@ const Rooms = ({route, navigation}) => {
               onPress={() => setInputModalVisible(true)}
             />
           )}
-          <RoomInputModal
+          <ModalNewRoom
             isVisible={inputModalVisible}
             onClose={() => setInputModalVisible(false)}
             onSend={handleCreateRoom}

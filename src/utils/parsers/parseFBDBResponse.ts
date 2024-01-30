@@ -62,3 +62,11 @@ export const parseRoomList = data => {
       });
   }
 };
+
+export const parseUserList = data => {
+  if (!data) {
+    return [];
+  } else {
+    return Object.keys(data).map(key => data[key]);
+  }
+};

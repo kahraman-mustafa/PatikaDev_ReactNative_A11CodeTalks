@@ -26,10 +26,7 @@ const ModalNewMessage = ({isVisible, onClose, onSend}) => {
       onBackButtonPress={onClose}>
       <View style={styles.container}>
         <View style={styles.input_container}>
-          <TextInput
-            placeholder="Odaya bir isim ver..."
-            onChangeText={setText}
-          />
+          <TextInput placeholder="Anlat bakalım..." onChangeText={setText} />
         </View>
         <Button title="Gönder" onPress={handleSend} />
       </View>

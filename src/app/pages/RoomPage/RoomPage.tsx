@@ -3,13 +3,16 @@ import database from '@react-native-firebase/database';
 import React from 'react';
 import {FlatList, SafeAreaView} from 'react-native';
 import Colors from '../../../styles/Color';
-import {parseRoomList} from '../../../utils/parsers/parseFBDBResponse';
+import {
+  parseMessageList,
+  parseUserList,
+} from '../../../utils/parsers/parseFBDBResponse';
 import EmptyView from '../../components/EmptyView';
 import FloatingButton from '../../components/FloatingButton';
 import LoadingView from '../../components/LoadingView';
-import RoomCard from '../../components/card/RoomCard/RoomCard';
+import MessageCard from '../../components/card/MessageCard';
 import {HeaderBack} from '../../components/header/HeaderBack/HeaderBack';
-import RoomInputModal from '../../components/modal/ModalNewRoom';
+import ModalNewMessage from '../../components/modal/ModalNewMessage';
 import {ROOMS_PAGE} from '../../router/routes';
 import styles from './RoomPage.style';
 
@@ -22,30 +25,25 @@ export interface MessageSchema {
   date: string;
   text: string;
   username: string;
+  like: number;
   dislike: number;
-}
-export interface RoomSchema {
-  id: string;
-  createdAt: string;
-  lastActiveAt: string;
-  name: string;
-  users: UserSchema[];
-  messages: MessageSchema[];
 }
 
 const RoomPage = ({route, navigation}) => {
   const [inputModalVisible, setInputModalVisible] =
     React.useState<boolean>(false);
-  const [roomList, setRoomList] = React.useState<RoomSchema[]>([]);
+  const [messageList, setMessageList] = React.useState<MessageSchema[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [isFloatingButtonVisible, showFloatingButton] =
     React.useState<boolean>(true);
   const [refreshing, setRefreshing] = React.useState<boolean>(false);
 
+  const {room} = route.params;
+
   React.useEffect(() => {
     const onPressBack = () => navigation.goBack();
     navigation.setOptions({
-      title: route.params?.roomName,
+      title: room.name,
       headerBackTitleVisible: true,
       headerBackTitle: ROOMS_PAGE,
       headerBackTitleStyle: {
@@ -55,13 +53,13 @@ const RoomPage = ({route, navigation}) => {
     });
     setLoading(true);
     const listenDB = () => {
-      const reference = database().ref('/rooms');
+      const reference = database().ref(`/rooms/${room.id}/messages`);
       reference.on(
         'value',
         snapshot => {
           const responseData = snapshot.val();
-          const parsedData = parseRoomList(responseData);
-          setRoomList(parsedData);
+          const parsedData = parseMessageList(responseData);
+          setMessageList(parsedData);
           setLoading(false);
         },
         error => console.log('Unable to get rooms info. Error: ' + error),
@@ -70,54 +68,98 @@ const RoomPage = ({route, navigation}) => {
 
     listenDB();
     console.log(new Date().toISOString());
-  }, []);
+  }, [navigation, room]);
 
   const checkDB = () => {
     setRefreshing(true);
-    const reference = database().ref('/rooms');
+    const reference = database().ref(`/rooms/${room.id}/messages`);
     reference
       .once('value')
       .then(snapshot => {
         const responseData = snapshot.val();
-        const parsedData = parseRoomList(responseData);
-        setRoomList(parsedData);
+        const parsedData = parseMessageList(responseData);
+        setMessageList(parsedData);
         setRefreshing(false);
       })
       .catch(error => console.log('Unable to get rooms info. Error: ' + error));
   };
 
-  const handleEnterRoom = (item: RoomSchema) => console.log(item);
-
-  const renderRoomItem = ({item}: {item: RoomSchema}) => (
-    <RoomCard room={item} onEnterRoom={() => handleEnterRoom(item)} />
-  );
-
-  const handleCreateRoom = (roomName: string) => {
-    setInputModalVisible(false);
-    createRoom(roomName);
+  const handleLike = (item: MessageSchema) => {
+    // Update given key-values in the provided ref node
+    const reference = database().ref(`/rooms/${room.id}/messages/${item.id}`);
+    reference
+      .update({
+        like: item.like + 1,
+      })
+      .then(() => console.log('Like number updated'));
+  };
+  const handleDislike = (item: MessageSchema) => {
+    // Update given key-values in the provided ref node
+    const reference = database().ref(`/rooms/${room.id}/messages/${item.id}`);
+    reference
+      .update({
+        dislike: item.dislike + 1,
+      })
+      .then(() => console.log('Dislike number updated'));
   };
 
-  const createRoom = (roomName: string) => {
-    if (roomList.filter(room => room.name === roomName).length > 0) {
-      console.log('A room with the same name already exists...');
-      return null;
-    }
+  const renderMessageItem = ({item}: {item: MessageSchema}) => (
+    <MessageCard
+      message={item}
+      onLike={() => handleLike(item)}
+      onDislike={() => handleDislike(item)}
+    />
+  );
 
+  const handleSendMessage = (message: string) => {
+    setInputModalVisible(false);
+    sendMessage(message);
+  };
+
+  const sendMessage = (message: string) => {
     const userMail = auth().currentUser?.email;
-    const founder = userMail?.split('@')[0];
-    const roomObject = {
-      founder,
-      name: roomName,
-      createdAt: new Date().toISOString(),
-      lastActiveAt: new Date().toISOString(),
-      messages: '',
-      users: [founder],
+    const username = userMail ? userMail.split('@')[0] : 'unknown';
+    const messageObject = {
+      date: new Date().toISOString(),
+      dislike: 0,
+      like: 0,
+      text: message,
+      username,
     };
     try {
-      database().ref('/rooms').push(roomObject);
-      console.log(roomObject);
+      database().ref(`/rooms/${room.id}/messages`).push(messageObject);
+      console.log(messageObject);
     } catch (error) {
       console.log('Unable to create room. Error: ' + error);
+    }
+
+    // If the writing user is not in the users list of the room add him/her
+    //  if not do nothing
+    let userList: string[] = [];
+    const userReference = database().ref(`/rooms/${room.id}/users`);
+    userReference.once('value').then(snapshot => {
+      const responseData = snapshot.val();
+      userList = parseUserList(responseData);
+      console.log('Current users: ' + userList);
+      if (userList.filter(user => user === username).length >= 1) {
+        // Do nothing
+      } else {
+        try {
+          userList.push(username);
+          userReference.set(userList).then(() => console.log('Data set'));
+          console.log('New users: ' + userList);
+        } catch (error) {
+          console.log('Unable to add user. Error: ' + error);
+        }
+      }
+    });
+  };
+
+  const handleScrollToEnd = () => {
+    if (messageList.length <= 3) {
+      showFloatingButton(true);
+    } else {
+      showFloatingButton(false);
     }
   };
 
@@ -127,15 +169,15 @@ const RoomPage = ({route, navigation}) => {
         <LoadingView message="Sohbet demleniyor..." />
       ) : (
         <>
-          {roomList.length === 0 ? (
+          {messageList.length === 0 ? (
             <EmptyView message="Gelin tanış olalım!" />
           ) : (
             <FlatList
-              data={roomList}
-              renderItem={renderRoomItem}
+              data={messageList}
+              renderItem={renderMessageItem}
               keyExtractor={item => item.id.toString()}
               onScroll={() => showFloatingButton(true)}
-              onEndReached={() => showFloatingButton(false)}
+              onEndReached={() => handleScrollToEnd()}
               // onStartReached={() => showFloatingButton(true)}
               onRefresh={() => checkDB()}
               refreshing={refreshing}
@@ -147,10 +189,10 @@ const RoomPage = ({route, navigation}) => {
               onPress={() => setInputModalVisible(true)}
             />
           )}
-          <RoomInputModal
+          <ModalNewMessage
             isVisible={inputModalVisible}
             onClose={() => setInputModalVisible(false)}
-            onSend={handleCreateRoom}
+            onSend={handleSendMessage}
           />
         </>
       )}
